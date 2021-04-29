@@ -70,19 +70,32 @@ class MW(QtWidgets.QMainWindow):
           }
         }
 
-        request = f'curl --request POST --url http://{server}:{port}/sending --header \'Content-Type: multipart/form-data\' --header \'content-type: multipart/form-data; boundary=---011000010111000001101001\' --form \'message={message}\' --form photo_first=@001.jpg --form photo_last=@001.jpg --form photo_best=@001.jpg --form photo_normalized=@001.jpg --form topic=silhouette --form count=3 --form delay=4'
+        message_ = str(message).replace('\'', '"')
+
+        request = f"curl --request POST --url http://{server}:{port}/sending --header 'Content-Type: multipart/form-data' --header 'content-type: multipart/form-data; boundary=---011000010111000001101001' --form 'message={message_}' --form photo_first=@001.jpg --form photo_last=@001.jpg --form photo_best=@001.jpg --form photo_normalized=@001.jpg --form topic=silhouette --form count=3 --form delay=4"
 
         res = subprocess.getoutput(request)
 
+        result = res.split('\n')[-1]
+        if result:
+            self.ui.result_le.setText(res)
+        else:
+            self.ui.result_le.setText('ID записи не получен!')
+
     @staticmethod
-    def bbox_convert(data: str) -> str:
+    def bbox_convert(data: str) -> list:
         """
             конвертим bbox
         :param data: входные данные строки
         :return: лист bbox'ов в строку для запроса
         """
 
-        return str(data.split(',')).replace('\'', '')
+        data_new = data.split(',')
+        new_list = []
+        for item in data_new:
+            new_list.append(int(item))
+
+        return new_list
 
     def bbox_sequence_convert(self, data: str) -> str:
         """
@@ -96,7 +109,7 @@ class MW(QtWidgets.QMainWindow):
         for item in temp:
             result_list.append(self.bbox_convert(item))
 
-        return str(result_list).replace('\'', '')
+        return result_list
 
 
 if __name__ == '__main__':
