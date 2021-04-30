@@ -97,7 +97,7 @@ class MW(QtWidgets.QMainWindow):
 
         return new_list
 
-    def bbox_sequence_convert(self, data: str) -> str:
+    def bbox_sequence_convert(self, data: str) -> list:
         """
             конвертим последовательность bbox'ов
         :param data: входные данные строки
